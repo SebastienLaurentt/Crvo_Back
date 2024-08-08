@@ -28,7 +28,7 @@ const createAdminUser = async () => {
       return;
     }
 
-    const adminUser = new userModel({ username, password });
+    const adminUser = new userModel({ username, password, role: 'admin' });
     await adminUser.save();
     console.log('Admin user created successfully');
   } catch (error) {

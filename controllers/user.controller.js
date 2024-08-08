@@ -15,11 +15,14 @@ module.exports.login = async (req, res) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.PRIVATE_KEY, {
-      expiresIn: "24h",
-    });
+    const token = jwt.sign(
+      { userId: user.id, role: user.role }, 
+      process.env.PRIVATE_KEY, 
+      { expiresIn: "24h" }
+    );
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
