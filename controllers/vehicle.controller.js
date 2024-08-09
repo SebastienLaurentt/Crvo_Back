@@ -17,7 +17,6 @@ module.exports.addVehicleWithUser = async (req, res) => {
       user = await user.save();
     }
 
-    
     const newVehicle = new VehicleModel({
       immatriculation: immatriculation,
       modele: modele,
@@ -28,6 +27,16 @@ module.exports.addVehicleWithUser = async (req, res) => {
     const savedVehicle = await newVehicle.save();
 
     return res.status(201).json({ user, vehicle: savedVehicle });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+};
+
+
+module.exports.getAllVehicles = async (req, res) => {
+  try {
+    const vehicles = await VehicleModel.find().populate('user', 'username');  // Populate to include user details
+    return res.status(200).json(vehicles);
   } catch (err) {
     return res.status(400).json({ message: err.message });
   }
