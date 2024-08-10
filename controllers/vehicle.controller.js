@@ -35,7 +35,7 @@ module.exports.addVehicleWithUser = async (req, res) => {
 
 module.exports.getAllVehicles = async (req, res) => {
   try {
-    const vehicles = await VehicleModel.find().populate('user', 'username');  // Populate to include user details
+    const vehicles = await VehicleModel.find().populate('user', 'username');  
     return res.status(200).json(vehicles);
   } catch (err) {
     return res.status(400).json({ message: err.message });
@@ -44,10 +44,10 @@ module.exports.getAllVehicles = async (req, res) => {
 
 module.exports.getVehiclesByUser = async (req, res) => {
   try {
-    const userId = req.user._id;  
-    const vehicles = await VehicleModel.find({ user: userId });
+    const vehicles = await VehicleModel.find({ user: req.user._id }).populate('user', 'username');
     return res.status(200).json(vehicles);
   } catch (err) {
+    console.log('Error fetching vehicles:', err.message);
     return res.status(400).json({ message: err.message });
   }
 };
