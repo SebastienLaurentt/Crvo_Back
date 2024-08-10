@@ -3,6 +3,6 @@ const router = require("express").Router();
 
 router.post("/api/vehicles", addVehicleWithUser);
 router.get("/api/vehicles", getAllVehicles);
-router.get('/user/vehicles', getVehiclesByUser);
+router.get('/api/user/vehicles', getVehiclesByUser);
 
 module.exports = router;
