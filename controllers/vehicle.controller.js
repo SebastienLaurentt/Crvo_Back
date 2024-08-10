@@ -41,3 +41,13 @@ module.exports.getAllVehicles = async (req, res) => {
     return res.status(400).json({ message: err.message });
   }
 };
+
+module.exports.getVehiclesByUser = async (req, res) => {
+  try {
+    const userId = req.user._id;  
+    const vehicles = await VehicleModel.find({ user: userId });
+    return res.status(200).json(vehicles);
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+};
