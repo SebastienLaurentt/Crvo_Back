@@ -1,21 +1,28 @@
 const VehicleModel = require("../models/vehicle.model");
 const UserModel = require("../models/user.model");
+const bcrypt = require("bcryptjs");
 
 module.exports.addVehicleWithUser = async (req, res) => {
   const { username, password, immatriculation, modele, joursDepuisReception } = req.body;
 
   try {
-    let user = await UserModel.findOneAndUpdate(
-      { username },
-      {
-        $setOnInsert: {
-          username: username,
-          password: password,
-          role: 'member'
-        }
-      },
-      { new: true, upsert: true }
-    );
+    let user = await UserModel.findOne({ username });
+
+    if (!user) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      user = await UserModel.findOneAndUpdate(
+        { username },
+        {
+          $setOnInsert: {
+            username: username,
+            password: hashedPassword, 
+            role: 'member'
+          }
+        },
+        { new: true, upsert: true }
+      );
+    }
 
     const newVehicle = new VehicleModel({
       immatriculation: immatriculation,
