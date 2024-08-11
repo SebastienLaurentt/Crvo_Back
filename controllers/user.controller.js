@@ -26,3 +26,16 @@ module.exports.login = async (req, res) => {
   }
 };
 
+module.exports.getAllUsers = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const users = await userModel.find(); 
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

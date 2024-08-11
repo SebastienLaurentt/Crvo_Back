@@ -9,7 +9,7 @@ module.exports.requireAuth = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.PRIVATE_KEY);
-    req.user = { _id: decoded.userId };  
+    req.user = { _id: decoded.userId, role: decoded.role }; // Ajout du rôle ici
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Token is not valid' });
