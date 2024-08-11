@@ -5,30 +5,33 @@ module.exports.addVehicleWithUser = async (req, res) => {
   const { username, password, immatriculation, modele, joursDepuisReception } = req.body;
 
   try {
-    let user = await UserModel.findOne({ username });
-
-    if (!user) {
-      user = new UserModel({
-        username: username,
-        password: password,
-        role: 'member' 
-      });
-
-      user = await user.save();
-    }
+    let user = await UserModel.findOneAndUpdate(
+      { username },
+      {
+        $setOnInsert: {
+          username: username,
+          password: password,
+          role: 'member'
+        }
+      },
+      { new: true, upsert: true }
+    );
 
     const newVehicle = new VehicleModel({
       immatriculation: immatriculation,
       modele: modele,
       joursDepuisReception: joursDepuisReception,
-      user: user._id  
+      user: user._id
     });
 
     const savedVehicle = await newVehicle.save();
 
     return res.status(201).json({ user, vehicle: savedVehicle });
   } catch (err) {
-    return res.status(400).json({ message: err.message });
+    if (err.code === 11000) {
+      return res.status(400).json({ message: "L'utilisateur existe déjà" });
+    }
+    return res.status(500).json({ message: err.message });
   }
 };
 
