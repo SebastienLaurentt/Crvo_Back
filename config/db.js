@@ -20,9 +20,6 @@ const createInitialUsers = async () => {
   try {
     const adminUsername = process.env.ADMIN_USERNAME || 'admin';
     const adminPassword = process.env.ADMIN_PASSWORD || 'adminpassword';
-    const memberUsername = process.env.MEMBER_USERNAME || 'member';
-    const memberPassword = process.env.MEMBER_PASSWORD || 'memberpassword';
-
 
     const existingAdminUser = await userModel.findOne({ username: adminUsername });
     if (existingAdminUser) {
@@ -34,14 +31,6 @@ const createInitialUsers = async () => {
     }
 
 
-    const existingMemberUser = await userModel.findOne({ username: memberUsername });
-    if (existingMemberUser) {
-      console.log('Member user already exists');
-    } else {
-      const memberUser = new userModel({ username: memberUsername, password: memberPassword, role: 'member' });
-      await memberUser.save();
-      console.log('Member user created successfully');
-    }
   } catch (error) {
     console.error('Error creating initial users:', error);
   }
