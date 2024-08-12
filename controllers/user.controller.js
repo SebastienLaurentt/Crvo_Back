@@ -1,6 +1,7 @@
 require('dotenv').config({ path: './.env' });
 const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 module.exports.login = async (req, res) => {
   try {
@@ -34,6 +35,33 @@ module.exports.getAllUsers = async (req, res) => {
 
     const users = await userModel.find(); 
     res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports.updatePassword = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { newPassword } = req.body;
+
+    if (req.user.role !== 'admin' && req.user.userId !== id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const user = await userModel.findByIdAndUpdate(
+      id,
+      { password: hashedPassword },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
