@@ -18,6 +18,26 @@ const VehicleSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,  
+  },
+  mecanique: {
+    type: Boolean,
+    default: false,
+  },
+  carrosserie: {
+    type: Boolean,
+    default: false,
+  },
+  ct: {
+    type: Boolean,
+    default: false,
+  },
+  dsp: {
+    type: Boolean,
+    default: false,
+  },
+  jantes: {
+    type: Boolean,
+    default: false,
   }
 }, {
   timestamps: true,
