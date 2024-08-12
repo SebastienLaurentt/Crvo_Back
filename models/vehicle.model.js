@@ -10,8 +10,8 @@ const VehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  joursDepuisReception: {
-    type: Number,
+  dateCreation: { 
+    type: Date,
     required: true,
   },
   user: {  
