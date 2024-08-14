@@ -38,6 +38,10 @@ const VehicleSchema = new mongoose.Schema({
   jantes: {
     type: Boolean,
     default: false,
+  },
+  esthetique: {  // Champ ajouté
+    type: Boolean,
+    default: true,
   }
 }, {
   timestamps: true,

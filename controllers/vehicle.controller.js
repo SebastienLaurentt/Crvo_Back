@@ -24,6 +24,8 @@ module.exports.addVehicleWithUser = async (req, res) => {
       );
     }
 
+    const esthetique = !(mecanique || carrosserie || ct || dsp || jantes);
+
     const newVehicle = new VehicleModel({
       immatriculation: immatriculation,
       modele: modele,
@@ -34,6 +36,7 @@ module.exports.addVehicleWithUser = async (req, res) => {
       ct: ct,
       dsp: dsp,
       jantes: jantes,
+      esthetique: esthetique,  
     });
 
     const savedVehicle = await newVehicle.save();
