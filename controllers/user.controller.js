@@ -33,12 +33,14 @@ module.exports.getAllUsers = async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const users = await userModel.find(); 
+    const users = await userModel.find({ role: { $ne: 'admin' } });
+
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 module.exports.updatePassword = async (req, res) => {
   try {
