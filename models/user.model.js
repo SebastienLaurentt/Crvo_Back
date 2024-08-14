@@ -16,6 +16,10 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'member'],
     default: 'member',
   },
+  passwordChanged: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 UserSchema.pre("save", async function (next) {

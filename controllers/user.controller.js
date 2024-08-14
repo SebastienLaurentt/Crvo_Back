@@ -53,7 +53,7 @@ module.exports.updatePassword = async (req, res) => {
 
     const user = await userModel.findByIdAndUpdate(
       id,
-      { password: hashedPassword },
+      { password: hashedPassword, passwordChanged: true },
       { new: true }
     );
 
