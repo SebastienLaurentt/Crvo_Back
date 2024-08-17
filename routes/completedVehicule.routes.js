@@ -1,6 +1,5 @@
-const {
-  addCompletedVehicleWithUser,
-} = require("../controllers/completedVehicule.controller");
+const { addCompletedVehicleWithUser } = require("../controllers/completedVehicule.controller");
+
 
 const router = require("express").Router();
 

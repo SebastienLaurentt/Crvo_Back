@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
-const UserModel = require('../models/User');
-const CompletedVehicleModel = require('../models/CompletedVehicle');
+const bcrypt = require('bcryptjs');
+const UserModel = require("../models/user.model");
+const CompletedVehicleModel = require('../models/completedVehicule.model');
 
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
   const { username, password, immatriculation, statut, dateCompletion } = req.body;
