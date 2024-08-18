@@ -3,7 +3,7 @@ const UserModel = require("../models/user.model");
 const CompletedVehicleModel = require('../models/completedVehicule.model');
 
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
-  const { username, password, immatriculation, statut, dateCompletion } = req.body;
+  const { username, password, vin, statut, dateCompletion } = req.body;
 
   try {
     // Rechercher l'utilisateur par nom d'utilisateur
@@ -29,7 +29,7 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
 
     const newCompletedVehicle = new CompletedVehicleModel({
       user: user._id,
-      immatriculation: immatriculation,
+      vin: vin,
       statut: statut,
       dateCompletion: new Date(dateCompletion),
     });

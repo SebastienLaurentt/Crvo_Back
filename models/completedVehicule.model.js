@@ -6,7 +6,7 @@ const CompletedVehicleSchema = new mongoose.Schema({
     ref: 'User',
     required: true,  
   },
-  immatriculation: {
+  vin: {
     type: String,
     required: true,
     unique: true,
