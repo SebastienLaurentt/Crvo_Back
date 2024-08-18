@@ -44,3 +44,12 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+module.exports.getAllCompletedVehicles = async (req, res) => {
+  try {
+    const vehicles = await CompletedVehicleModel.find().populate('user', 'username');  
+    return res.status(200).json(vehicles);
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+};
