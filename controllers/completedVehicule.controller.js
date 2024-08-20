@@ -27,7 +27,7 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
       user: user._id,
       vin: vin,
       statut: statut,
-      dateCompletion: new Date(dateCompletion),
+      dateCompletion: dateCompletion, 
     });
 
     const savedCompletedVehicle = await newCompletedVehicle.save();

@@ -16,7 +16,7 @@ const CompletedVehicleSchema = new mongoose.Schema({
     required: true,
   },
   dateCompletion: {  
-    type: Date,
+    type: String,  
     required: true,
   },
 }, {
