@@ -69,17 +69,3 @@ module.exports.getVehiclesByUser = async (req, res) => {
   }
 };
 
-module.exports.getCompletedVehiclesByUser = async (req, res) => {
-  try {
-    const completedVehicles = await CompletedVehicleModel.find({ user: req.user._id }).populate('user', 'username');
-    
-    if (!completedVehicles || completedVehicles.length === 0) {
-      return res.status(404).json({ message: "Aucun véhicule complété trouvé pour cet utilisateur." });
-    }
-    
-    return res.status(200).json(completedVehicles);
-  } catch (err) {
-    console.log('Error fetching completed vehicles:', err.message);
-    return res.status(400).json({ message: err.message });
-  }
-};
