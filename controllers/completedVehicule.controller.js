@@ -6,14 +6,10 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
   const { username, password, vin, statut, dateCompletion } = req.body;
 
   try {
-    // Rechercher l'utilisateur par nom d'utilisateur
     let user = await UserModel.findOne({ username });
 
-    // Si l'utilisateur n'existe pas, on le crée
     if (!user) {
-      const hashedPassword = await bcrypt.hash(password, 10); // Hachage du mot de passe
-      
-      // Mise à jour ou insertion de l'utilisateur
+      const hashedPassword = await bcrypt.hash(password, 10); 
       user = await UserModel.findOneAndUpdate(
         { username },
         {
