@@ -9,6 +9,10 @@ const VehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  vin: {  // Ajout du champ vin
+    type: String,
+    required: true,
+  },
   dateCreation: { 
     type: Date,
     required: true,
@@ -38,7 +42,7 @@ const VehicleSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  esthetique: {  // Champ ajouté
+  esthetique: {
     type: Boolean,
     default: true,
   }

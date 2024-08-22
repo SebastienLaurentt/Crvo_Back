@@ -3,7 +3,7 @@ const UserModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 
 module.exports.addVehicleWithUser = async (req, res) => {
-  const { username, password, immatriculation, modele, dateCreation, mecanique, carrosserie, ct, dsp, jantes } = req.body;
+  const { username, password, immatriculation, modele, vin, dateCreation, mecanique, carrosserie, ct, dsp, jantes } = req.body;
 
   try {
     let user = await UserModel.findOne({ username });
@@ -29,6 +29,7 @@ module.exports.addVehicleWithUser = async (req, res) => {
     const newVehicle = new VehicleModel({
       immatriculation: immatriculation,
       modele: modele,
+      vin: vin,  
       dateCreation: new Date(dateCreation), 
       user: user._id,
       mecanique: mecanique,
@@ -68,4 +69,3 @@ module.exports.getVehiclesByUser = async (req, res) => {
     return res.status(400).json({ message: err.message });
   }
 };
-
