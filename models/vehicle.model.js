@@ -4,7 +4,6 @@ const VehicleSchema = new mongoose.Schema({
   immatriculation: {
     type: String,
     required: true,
-    unique: true,
   },
   modele: {
     type: String,
