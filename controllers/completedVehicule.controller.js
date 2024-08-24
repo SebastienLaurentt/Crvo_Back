@@ -1,15 +1,18 @@
 const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const UserModel = require("../models/user.model");
 const CompletedVehicleModel = require("../models/completedVehicule.model");
 
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
-  const { username, password, vin, statut, dateCompletion } = req.body;
+  const { username, vin, statut, dateCompletion } = req.body;
 
   try {
     let user = await UserModel.findOne({ username });
 
     if (!user) {
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const randomPassword = crypto.randomBytes(8).toString("hex");
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
       user = await UserModel.findOneAndUpdate(
         { username },
         {
@@ -21,13 +24,15 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
         },
         { new: true, upsert: true }
       );
+
+      console.log(`Mot de passe généré pour ${username}: ${randomPassword}`);
     }
 
     const newCompletedVehicle = new CompletedVehicleModel({
       user: user._id,
       vin: vin,
       statut: statut,
-      dateCompletion: dateCompletion, 
+      dateCompletion: dateCompletion,
     });
 
     const savedCompletedVehicle = await newCompletedVehicle.save();
