@@ -4,7 +4,7 @@ const UserModel = require("../models/user.model");
 const CompletedVehicleModel = require("../models/completedVehicule.model");
 
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
-  const { username, vin, statut, dateCompletion } = req.body;
+  const { username, vin, statut, dateCompletion, immat, prix } = req.body;
 
   try {
     let user = await UserModel.findOne({ username });
@@ -33,6 +33,8 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
       vin: vin,
       statut: statut,
       dateCompletion: dateCompletion,
+      immat: immat,
+      prix: prix,
     });
 
     const savedCompletedVehicle = await newCompletedVehicle.save();

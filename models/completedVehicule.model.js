@@ -1,23 +1,31 @@
 const mongoose = require("mongoose");
 
 const CompletedVehicleSchema = new mongoose.Schema({
-  user: {  
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,  
+    required: true,
   },
   vin: {
     type: String,
     required: true,
     unique: true,
   },
-  statut: {  
+  statut: {
     type: String,
     required: true,
   },
-  dateCompletion: {  
-    type: String,  
+  dateCompletion: {
+    type: String,
     required: true,
+  },
+  immat: {  
+    type: String,
+    required: true,  
+  },
+  prix: {  
+    type: Number,
+    required: true,  
   },
 }, {
   timestamps: true,
