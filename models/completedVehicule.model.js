@@ -19,11 +19,11 @@ const CompletedVehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  immat: {  
+  immatriculation: {  
     type: String,
     required: false,  
   },
-  prix: {  
+  price: {  
     type: Number,
     required: false,  
   },
