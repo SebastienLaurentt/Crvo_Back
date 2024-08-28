@@ -21,11 +21,11 @@ const CompletedVehicleSchema = new mongoose.Schema({
   },
   immat: {  
     type: String,
-    required: true,  
+    required: false,  
   },
   prix: {  
     type: Number,
-    required: true,  
+    required: false,  
   },
 }, {
   timestamps: true,
