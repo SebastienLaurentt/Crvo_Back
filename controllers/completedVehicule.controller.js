@@ -25,7 +25,6 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
         { new: true, upsert: true }
       );
 
-      console.log(`Mot de passe généré pour ${username}: ${randomPassword}`);
     }
 
     const newCompletedVehicle = new CompletedVehicleModel({
