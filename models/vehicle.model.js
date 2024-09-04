@@ -9,9 +9,13 @@ const VehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  vin: {  // Ajout du champ vin
+  vin: {  
     type: String,
     required: true,
+  },
+  price: {  
+    type: Number,
+    required: false,  
   },
   dateCreation: { 
     type: Date,
