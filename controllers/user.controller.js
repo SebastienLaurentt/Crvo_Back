@@ -52,10 +52,18 @@ module.exports.updateInfos = async (req, res) => {
       return res.status(400).json({ message: "L'ID de l'utilisateur est requis" });
     }
 
+    // Vérifiez la structure des données envoyées
+    console.log("Received data:", req.body);
+
     // Rechercher l'utilisateur par ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    // Si ni password ni downloadUrl ne sont fournis, renvoyer une erreur
+    if (!password && !downloadUrl) {
+      return res.status(400).json({ message: "Aucune donnée à mettre à jour." });
     }
 
     // Mise à jour du mot de passe, si fourni
