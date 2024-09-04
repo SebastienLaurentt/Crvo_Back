@@ -20,10 +20,6 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  downloadUrl: {
-    type: String,
-    default: null, 
-  }
 });
 
 UserSchema.pre("save", async function (next) {
