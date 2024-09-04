@@ -47,31 +47,37 @@ module.exports.updateInfos = async (req, res) => {
     const { userId } = req.params;
     const { password, downloadUrl } = req.body;
 
-    // Find the user by their ID
-    const user = await User.findById(userId);
+    // Validation des entrées
+    if (!userId) {
+      return res.status(400).json({ message: "L'ID de l'utilisateur est requis" });
+    }
 
+    // Rechercher l'utilisateur par ID
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });
     }
 
-    // If password is provided, update it
-    if (password) {
+    // Mise à jour du mot de passe, si fourni
+    if (password && password.length > 0) {
       const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-      user.passwordChanged = true; // Mark that password was changed
+      const hashedPassword = await bcrypt.hash(password, salt);
+      user.password = hashedPassword;
+      user.passwordChanged = true; // Marquer que le mot de passe a été modifié
     }
 
-    // If downloadUrl is provided, update it
-    if (downloadUrl) {
+    // Mise à jour du downloadUrl, si fourni
+    if (downloadUrl && downloadUrl.length > 0) {
       user.downloadUrl = downloadUrl;
     }
 
-    // Save the updated user information
+    // Sauvegarder les informations mises à jour de l'utilisateur
     await user.save();
 
-    res.status(200).json({ message: "Informations mises à jour avec succès" });
+    return res.status(200).json({ message: "Informations mises à jour avec succès", user });
   } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la mise à jour des informations" });
+    console.error("Erreur lors de la mise à jour des informations:", error);
+    return res.status(500).json({ message: "Erreur lors de la mise à jour des informations" });
   }
 };
 
