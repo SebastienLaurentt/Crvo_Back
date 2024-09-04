@@ -46,7 +46,7 @@ module.exports.updateInfos = async (req, res) => {
   try {
     const { userId } = req.params;
     const { password, downloadUrl } = req.body;
-    const user = await User.findById(userId);
+    const user = await userModel.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Utilisateur non trouvé" });
     }
