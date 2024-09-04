@@ -42,30 +42,38 @@ module.exports.getAllUsers = async (req, res) => {
 };
 
 
-module.exports.updatePassword = async (req, res) => {
+module.exports.updateInfos = async (req, res) => {
   try {
-    const { id } = req.params; 
-    const { newPassword } = req.body;
+    const { userId } = req.params;
+    const { password, downloadUrl } = req.body;
 
-    if (req.user.role !== 'admin' && req.user.userId !== id) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    const user = await userModel.findByIdAndUpdate(
-      id,
-      { password: hashedPassword, passwordChanged: true },
-      { new: true }
-    );
+    // Find the user by their ID
+    const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
     }
 
-    res.status(200).json({ message: "Password updated successfully" });
+    // If password is provided, update it
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+      user.passwordChanged = true; // Mark that password was changed
+    }
+
+    // If downloadUrl is provided, update it
+    if (downloadUrl) {
+      user.downloadUrl = downloadUrl;
+    }
+
+    // Save the updated user information
+    await user.save();
+
+    res.status(200).json({ message: "Informations mises à jour avec succès" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Erreur lors de la mise à jour des informations" });
   }
 };
+
+
 
