@@ -7,20 +7,27 @@ module.exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await userModel.findOne({ username });
+
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ message: "Utilisateur non trouvé" });
     }
 
     const isMatch = await user.comparePassword(password);
+
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid password" });
+      return res.status(400).json({ message: "Mot de passe invalide" });
     }
 
     const token = jwt.sign(
-      { userId: user.id, role: user.role }, 
+      { 
+        userId: user.id, 
+        role: user.role,
+        downloadUrl: user.downloadUrl 
+      }, 
       process.env.PRIVATE_KEY, 
       { expiresIn: "24h" }
     );
+
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ message: error.message });
