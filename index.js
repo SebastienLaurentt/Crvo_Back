@@ -14,7 +14,8 @@ app.use(cors());
 app.use("/", require("./routes/completedVehicule.routes")); 
 app.use("/", require("./routes/vehicle.routes")); 
 app.use("/", require("./routes/user.routes")); 
-app.use("/", require("./routes/cleanup.routes")); 
+app.use("/", require("./routes/cleanUpVehicle.routes")); 
+app.use("/", require("./routes/cleanUpCompletedVehicle.routes"));
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
