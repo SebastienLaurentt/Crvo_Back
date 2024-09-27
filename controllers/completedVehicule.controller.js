@@ -4,8 +4,7 @@ const UserModel = require("../models/user.model");
 const CompletedVehicleModel = require("../models/completedVehicule.model");
 
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
-  const { username, vin, statut, dateCompletion, immatriculation, price } =
-    req.body;
+  const { username, vin, statut, dateCompletion, immatriculation, price } = req.body;
 
   try {
     let user = await UserModel.findOne({ username });
@@ -25,6 +24,7 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
         },
         { new: true, upsert: true }
       );
+
     }
 
     const newCompletedVehicle = new CompletedVehicleModel({
@@ -43,23 +43,13 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
       .json({ user, completedVehicle: savedCompletedVehicle });
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(400).json({ message: "L'utilisateur existe déjà" });
+      return res
+        .status(400)
+        .json({ message: "L'utilisateur ouu le véhicule existe déjà" });
     }
     return res.status(500).json({ message: err.message });
   }
 };
-//     return res
-//       .status(201)
-//       .json({ user, completedVehicle: savedCompletedVehicle });
-//   } catch (err) {
-//     if (err.code === 11000) {
-//       return res
-//         .status(400)
-//         .json({ message: "L'utilisateur ouu le véhicule existe déjà" });
-//     }
-//     return res.status(500).json({ message: err.message });
-//   }
-// };
 
 module.exports.getAllCompletedVehicles = async (req, res) => {
   try {
