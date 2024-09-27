@@ -9,7 +9,6 @@ const CompletedVehicleSchema = new mongoose.Schema({
   vin: {
     type: String,
     required: true,
-    unique: true,
   },
   statut: {
     type: String,
