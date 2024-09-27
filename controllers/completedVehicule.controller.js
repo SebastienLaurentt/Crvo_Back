@@ -4,8 +4,7 @@ const UserModel = require("../models/user.model");
 const CompletedVehicleModel = require("../models/completedVehicule.model");
 
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
-  const { username, vin, statut, dateCompletion, immatriculation, price } =
-    req.body;
+  const { username, vin, statut, dateCompletion, immatriculation, price } = req.body;
 
   try {
     let user = await UserModel.findOne({ username });
@@ -25,36 +24,29 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
         },
         { new: true, upsert: true }
       );
+
     }
 
-    let completedVehicle = await CompletedVehicleModel.findOne({ vin: vin });
+    const newCompletedVehicle = new CompletedVehicleModel({
+      user: user._id,
+      vin: vin,
+      statut: statut,
+      dateCompletion: dateCompletion,
+      immatriculation: immatriculation,
+      price: price,
+    });
 
-    if (completedVehicle) {
-      // Update existing vehicle
-      completedVehicle.user = user._id;
-      completedVehicle.statut = statut;
-      completedVehicle.dateCompletion = dateCompletion;
-      completedVehicle.immatriculation = immatriculation;
-      completedVehicle.price = price;
-    } else {
-      // Create new vehicle
-      completedVehicle = new CompletedVehicleModel({
-        user: user._id,
-        vin: vin,
-        statut: statut,
-        dateCompletion: dateCompletion,
-        immatriculation: immatriculation,
-        price: price,
-      });
-    }
-
-    const savedCompletedVehicle = await completedVehicle.save();
+    const savedCompletedVehicle = await newCompletedVehicle.save();
 
     return res
       .status(201)
       .json({ user, completedVehicle: savedCompletedVehicle });
   } catch (err) {
-    console.error(err);
+    if (err.code === 11000) {
+      return res
+        .status(400)
+        .json({ message: "L'utilisateur ouu le véhicule existe déjà" });
+    }
     return res.status(500).json({ message: err.message });
   }
 };
