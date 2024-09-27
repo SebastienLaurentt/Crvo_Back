@@ -24,7 +24,6 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
         },
         { new: true, upsert: true }
       );
-
     }
 
     const newCompletedVehicle = new CompletedVehicleModel({
@@ -42,12 +41,16 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
       .status(201)
       .json({ user, completedVehicle: savedCompletedVehicle });
   } catch (err) {
+    console.error("Erreur dans addCompletedVehicleWithUser:");
+    console.error("Données reçues:", req.body);
+    console.error("Détails de l'erreur:", err);
+
     if (err.code === 11000) {
       return res
         .status(400)
-        .json({ message: "L'utilisateur ouu le véhicule existe déjà" });
+        .json({ message: "L'utilisateur ou le véhicule existe déjà", error: err.message });
     }
-    return res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message, stack: err.stack });
   }
 };
 
