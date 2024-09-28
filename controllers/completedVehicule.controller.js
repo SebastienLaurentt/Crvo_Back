@@ -3,6 +3,54 @@ const crypto = require("crypto");
 const UserModel = require("../models/user.model");
 const CompletedVehicleModel = require("../models/completedVehicule.model");
 
+
+module.exports.addCompletedVehiclesBatch = async (req, res) => {
+  const vehicles = req.body; // Ceci devrait être un tableau de véhicules
+
+  try {
+    const results = [];
+
+    for (const vehicleData of vehicles) {
+      const { username, vin, statut, dateCompletion, immatriculation, price } = vehicleData;
+
+      let user = await UserModel.findOne({ username });
+
+      if (!user) {
+        const randomPassword = crypto.randomBytes(8).toString("hex");
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+        user = await UserModel.findOneAndUpdate(
+          { username },
+          {
+            $setOnInsert: {
+              username: username,
+              password: hashedPassword,
+              role: "member",
+            },
+          },
+          { new: true, upsert: true }
+        );
+      }
+
+      const newCompletedVehicle = new CompletedVehicleModel({
+        user: user._id,
+        vin,
+        statut,
+        dateCompletion,
+        immatriculation,
+        price,
+      });
+
+      const savedCompletedVehicle = await newCompletedVehicle.save();
+      results.push({ user, completedVehicle: savedCompletedVehicle });
+    }
+
+    return res.status(201).json(results);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
   const { username, vin, statut, dateCompletion, immatriculation, price } = req.body;
 
