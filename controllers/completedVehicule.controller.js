@@ -47,12 +47,6 @@ module.exports.addCompletedVehiclesBatch = async (req, res) => {
 
     return res.status(201).json(results);
   } catch (err) {
-    if (err.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "L'utilisateur ou le véhicule existe déjà" });
-    }
-    console.error("Erreur lors du traitement du lot:", err);
     return res.status(500).json({ message: err.message });
   }
 };
