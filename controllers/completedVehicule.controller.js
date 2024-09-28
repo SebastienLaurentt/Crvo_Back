@@ -5,7 +5,7 @@ const CompletedVehicleModel = require("../models/completedVehicule.model");
 
 
 module.exports.addCompletedVehiclesBatch = async (req, res) => {
-  const vehicles = req.body; // Ceci devrait être un tableau de véhicules
+  const vehicles = req.body; 
 
   try {
     const results = [];
