@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const vehicleController = require("./controllers/vehicle.controller");
+const completedVehicleController = require("./controllers/completedVehicule.controller");
 
 require("dotenv").config({ path: "./.env" });
 require("./config/db");
@@ -13,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors());
 
-// Autres routes si nécessaire
+// Routes
 app.use("/", require("./routes/completedVehicule.routes"));
 app.use("/", require("./routes/vehicle.routes"));
 app.use("/", require("./routes/user.routes"));
@@ -29,6 +30,16 @@ const server = app.listen(process.env.PORT, () => {
     .catch((err) =>
       console.error(
         "Erreur lors de l'initialisation des données de véhicules:",
+        err
+      )
+    );
+
+  completedVehicleController
+    .initializeCompletedVehicleData()
+    .then(() => console.log("Initialisation des données de véhicules complétés terminée"))
+    .catch((err) =>
+      console.error(
+        "Erreur lors de l'initialisation des données de véhicules complétés:",
         err
       )
     );
