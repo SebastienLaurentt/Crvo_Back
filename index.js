@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cron = require('node-cron');
 const app = express();
 const vehicleController = require("./controllers/vehicle.controller");
 const completedVehicleController = require("./controllers/completedVehicule.controller");
@@ -24,16 +25,24 @@ app.use("/", require("./routes/cleanUpCompletedVehicle.routes"));
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 
-  vehicleController
-    .initializeVehicleData()
-    .then(() => console.log("Initialisation des données de véhicules terminée"))
-    .catch((err) =>
-      console.error(
-        "Erreur lors de l'initialisation des données de véhicules:",
-        err
-      )
-    );
+  // Fonction pour exécuter l'importation des véhicules
+  const runVehicleImport = () => {
+    console.log('Exécution de l\'importation horaire des véhicules');
+    vehicleController
+      .initializeVehicleData()
+      .then(() => console.log("Initialisation des données de véhicules terminée"))
+      .catch((err) =>
+        console.error(
+          "Erreur lors de l'initialisation des données de véhicules:",
+          err
+        )
+      );
+  };
 
+  // Planifier l'importation des véhicules toutes les heures
+  cron.schedule('0 * * * *', runVehicleImport);
+
+  // Exécuter l'importation des véhicules complétés une seule fois au démarrage
   completedVehicleController
     .initializeCompletedVehicleData()
     .then(() => console.log("Initialisation des données de véhicules complétés terminée"))
