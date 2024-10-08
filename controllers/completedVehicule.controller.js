@@ -2,33 +2,17 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const UserModel = require("../models/user.model");
 const CompletedVehicleModel = require("../models/completedVehicule.model");
-const { importCompletedVehicleData } = require("../services/vehiculeCompletedImportServices");
 
-
-
-module.exports.importCompletedVehicles = async (req, res) => {
-  try {
-    const result = await importCompletedVehicleData();
-
-    if (result.success) {
-      return res.status(201).json({ message: "Données importées avec succès", count: result.count });
-    } else {
-      return res.status(400).json({ message: result.error });
-    }
-  } catch (err) {
-    console.error("Erreur lors de l'importation des données:", err);
-    return res.status(500).json({ message: err.message });
-  }
-};
 
 module.exports.addCompletedVehiclesBatch = async (req, res) => {
-  const vehicles = req.body; 
+  const vehicles = req.body;
 
   try {
     const results = [];
 
     for (const vehicleData of vehicles) {
-      const { username, vin, statut, dateCompletion, immatriculation, price } = vehicleData;
+      const { username, vin, statut, dateCompletion, immatriculation, price } =
+        vehicleData;
 
       let user = await UserModel.findOne({ username });
 
@@ -69,7 +53,8 @@ module.exports.addCompletedVehiclesBatch = async (req, res) => {
 };
 
 module.exports.addCompletedVehicleWithUser = async (req, res) => {
-  const { username, vin, statut, dateCompletion, immatriculation, price } = req.body;
+  const { username, vin, statut, dateCompletion, immatriculation, price } =
+    req.body;
 
   try {
     let user = await UserModel.findOne({ username });
@@ -89,7 +74,6 @@ module.exports.addCompletedVehicleWithUser = async (req, res) => {
         },
         { new: true, upsert: true }
       );
-
     }
 
     const newCompletedVehicle = new CompletedVehicleModel({
@@ -137,35 +121,5 @@ module.exports.getCompletedVehiclesByUser = async (req, res) => {
   } catch (err) {
     console.log("Error fetching completed vehicles:", err.message);
     return res.status(400).json({ message: err.message });
-  }
-};
-
-module.exports.importCompletedVehicles = async (req, res) => {
-  try {
-    const result = await importCompletedVehicleData();
-
-    if (result.success) {
-      return res.status(201).json({ message: "Données importées avec succès", count: result.count });
-    } else {
-      return res.status(400).json({ message: result.error });
-    }
-  } catch (err) {
-    console.error("Erreur lors de l'importation des données:", err);
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-// Nouvelle fonction pour l'initialisation
-module.exports.initializeCompletedVehicleData = async () => {
-  try {
-    const result = await importCompletedVehicleData();
-    if (result.success) {
-      console.log(`Données de véhicules complétés initialisées avec succès. ${result.count} véhicules importés.`);
-    } else {
-      console.error("Erreur lors de l'initialisation des données de véhicules complétés:", result.error);
-    }
-  } catch (error) {
-    console.error("Erreur lors de l'initialisation des données de véhicules complétés:", error);
-    throw error; // Propager l'erreur pour la gestion dans server.js
   }
 };
