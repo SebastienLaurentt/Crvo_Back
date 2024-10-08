@@ -13,10 +13,7 @@ const VehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  price: {  
-    type: String,
-    required: false,  
-  },
+
   dateCreation: { 
     type: Date,
     required: true,
