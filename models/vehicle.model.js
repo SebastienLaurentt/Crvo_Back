@@ -18,6 +18,10 @@ const VehicleSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  statusCategory: {
+    type: String,
+    required: true,
+  },
   user: {  
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -46,7 +50,7 @@ const VehicleSchema = new mongoose.Schema({
   esthetique: {
     type: Boolean,
     default: true,
-  }
+  },
 }, {
   timestamps: true,
 });

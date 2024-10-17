@@ -3,6 +3,7 @@ const { Writable } = require('stream');
 const VehicleModel = require("../models/vehicle.model");
 const UserModel = require("../models/user.model");
 const { connectToFTP } = require("./ftpServices");
+const { statusCategories } = require('./statusCategories');
 
 const excelDateToJSDate = (serial) => {
   if (!serial || isNaN(serial)) {
@@ -51,14 +52,15 @@ const readExcelFromFTP = async (client, filename) => {
   return workbook.Sheets[workbook.SheetNames[0]];
 };
 
-const processFirstFile = (sheet) => {
+const processFile = (sheet) => {
   const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
   return data.slice(1).map(row => ({
     client: row[1] ? String(row[1]).trim() : null,
     immatriculation: row[2] ? String(row[2]).trim() : null,
-    vin: row[5] ? String(row[5]).trim() : null,
     modele: row[3] ? String(row[3]).trim() : null,
+    vin: row[5] ? String(row[5]).trim() : null,
     dateCreation: row[8] ? convertToDate(row[8]) : null,
+    statusCategory: categorizeStatus(row[10] ? String(row[10]).trim() : null),
     mecanique: String(row[16]).trim().toLowerCase() === "oui",
     carrosserie: String(row[17]).trim().toLowerCase() === "oui",
     ct: String(row[18]).trim().toLowerCase() === "oui",
@@ -67,12 +69,8 @@ const processFirstFile = (sheet) => {
   }));
 };
 
-const processSecondFile = (sheet) => {
-  const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
-  return data.slice(1).map(row => ({
-    immatriculation: row[1] ? String(row[1]).trim() : null,
-    price: row[3] ? String(row[3]) : null,
-  }));
+const categorizeStatus = (status) => {
+  return statusCategories[status] || 'Inconnu';
 };
 
 const importVehicleData = async () => {
@@ -81,60 +79,52 @@ const importVehicleData = async () => {
   try {
     client = await connectToFTP();
 
-    const sheet1 = await readExcelFromFTP(client, "EtatduParcNEW.csv");
-    const vehicleData = processFirstFile(sheet1);
-
-    const sheet2 = await readExcelFromFTP(client, "EnCoursFre.csv");
-    const priceData = processSecondFile(sheet2);
-
-    const mergedData = vehicleData.map(vehicle => {
-      const matchingPrice = priceData.find(price => 
-        price.immatriculation && vehicle.immatriculation &&
-        price.immatriculation.trim() === vehicle.immatriculation.trim()
-      );
-      return { ...vehicle, price: matchingPrice?.price || null };
-    });
+    const sheet = await readExcelFromFTP(client, "Etat-du-parc-Heure.csv");
+    const vehiclesData = processFile(sheet);
 
     await VehicleModel.deleteMany({});
 
-    for (const vehicleData of mergedData) {
-      if (!vehicleData.dateCreation) {
-        console.warn(`Date de création invalide pour le véhicule: ${vehicleData.immatriculation}`);
+    let importedCount = 0;
+
+    for (const vehicle of vehiclesData) {
+      if (!vehicle.dateCreation) {
+        console.warn(`Date de création invalide pour le véhicule: ${vehicle.immatriculation}`);
         continue; 
       }
 
       try {
-        let user = await UserModel.findOne({ username: vehicleData.client });
+        let user = await UserModel.findOne({ username: vehicle.client });
 
         if (!user) {
           user = await UserModel.create({
-            username: vehicleData.client,
+            username: vehicle.client,
             password: Math.random().toString(36).slice(-8),
             role: 'member',
           });
         }
 
         const newVehicle = new VehicleModel({
-          immatriculation: vehicleData.immatriculation,
-          vin: vehicleData.vin,
-          modele: vehicleData.modele,
-          price: vehicleData.price,
-          dateCreation: vehicleData.dateCreation,
+          immatriculation: vehicle.immatriculation,
+          vin: vehicle.vin,
+          modele: vehicle.modele,
+          dateCreation: vehicle.dateCreation,
           user: user._id,
-          mecanique: vehicleData.mecanique,
-          carrosserie: vehicleData.carrosserie,
-          ct: vehicleData.ct,
-          dsp: vehicleData.dsp,
-          jantes: vehicleData.jantes,
+          mecanique: vehicle.mecanique,
+          carrosserie: vehicle.carrosserie,
+          ct: vehicle.ct,
+          dsp: vehicle.dsp,
+          jantes: vehicle.jantes,
+          statusCategory: vehicle.statusCategory,
         });
 
         await newVehicle.save();
+        importedCount++;
       } catch (error) {
-        console.error(`Erreur lors de l'enregistrement du véhicule ${vehicleData.immatriculation}:`, error);
+        console.error(`Erreur lors de l'enregistrement du véhicule ${vehicle.immatriculation}:`, error);
       }
     }
 
-    return { success: true, count: mergedData.length };
+    return { success: true, count: importedCount };
   } catch (error) {
     console.error("Erreur lors de l'importation des données:", error);
     return { success: false, error: error.message };

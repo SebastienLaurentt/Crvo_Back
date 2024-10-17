@@ -2,6 +2,7 @@ const VehicleModel = require("../models/vehicle.model");
 const UserModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const { importVehicleData } = require("../services/vehicleImportServices");
 
 module.exports.addVehiclesBatch = async (req, res) => {
   const vehicles = req.body; 
@@ -154,30 +155,16 @@ module.exports.getVehiclesByUser = async (req, res) => {
   }
 };
 
-// module.exports.importVehicles = async (req, res) => {
-//   try {
-//     const result = await importVehicleData();
-//     if (result.success) {
-//       res.status(200).json({ message: "Données importées avec succès", count: result.count });
-//     } else {
-//       res.status(500).json({ message: "Erreur lors de l'importation des données", error: result.error });
-//     }
-//   } catch (error) {
-//     console.error("Erreur dans le contrôleur d'importation:", error);
-//     res.status(500).json({ message: "Erreur interne du serveur", error: error.message });
-//   }
-// };
-
-// module.exports.initializeVehicleData = async () => {
-//   try {
-//     const result = await importVehicleData();
-//     if (result.success) {
-//       console.log(`Données de véhicules initialisées avec succès. ${result.count} véhicules importés.`);
-//     } else {
-//       console.error("Erreur lors de l'initialisation des données de véhicules:", result.error);
-//     }
-//   } catch (error) {
-//     console.error("Erreur lors de l'initialisation des données de véhicules:", error);
-//     throw error; // Propager l'erreur pour la gestion dans index.js
-//   }
-// };
+module.exports.initializeVehicleData = async () => {
+  try {
+    const result = await importVehicleData();
+    if (result.success) {
+      console.log(`Données de véhicules initialisées avec succès. ${result.count} véhicules importés.`);
+    } else {
+      console.error("Erreur lors de l'initialisation des données de véhicules:", result.error);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'initialisation des données de véhicules:", error);
+    throw error; // Propager l'erreur pour la gestion dans index.js
+  }
+};
