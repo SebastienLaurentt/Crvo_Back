@@ -60,7 +60,12 @@ const processFile = (sheet) => {
     modele: row[3] ? String(row[3]).trim() : null,
     vin: row[5] ? String(row[5]).trim() : null,
     dateCreation: row[8] ? convertToDate(row[8]) : null,
-    statusCategory: categorizeStatus(row[10] ? String(row[10]).trim() : null),
+    status: row[10] ? String(row[10]).trim() : null,
+    pieceDisponible: row[22] ? String(row[22]).trim() : null,
+    statusCategory: categorizeStatus(
+      row[10] ? String(row[10]).trim() : null,
+      row[22] ? String(row[22]).trim() : null
+    ),
     mecanique: String(row[16]).trim().toLowerCase() === "oui",
     carrosserie: String(row[17]).trim().toLowerCase() === "oui",
     ct: String(row[18]).trim().toLowerCase() === "oui",
@@ -69,7 +74,10 @@ const processFile = (sheet) => {
   }));
 };
 
-const categorizeStatus = (status) => {
+const categorizeStatus = (status, pieceDisponible) => {
+  if (status === "Stocké sur parc d'attente travaux") {
+    return pieceDisponible === "PIECE DISPONIBLE" ? "Production" : "Magasin";
+  }
   return statusCategories[status] || 'Inconnu';
 };
 
