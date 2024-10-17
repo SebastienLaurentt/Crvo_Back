@@ -4,6 +4,7 @@ const VehicleModel = require("../models/vehicle.model");
 const UserModel = require("../models/user.model");
 const { connectToFTP } = require("./ftpServices");
 const { statusCategories } = require('./statusCategories');
+const SynchronizationDateModel = require("../models/synchronizationDate.model");
 
 const excelDateToJSDate = (serial) => {
   if (!serial || isNaN(serial)) {
@@ -132,9 +133,13 @@ const importVehicleData = async () => {
       }
     }
 
+    // Create a new synchronization date record
+    const newSynchronizationDate = new SynchronizationDateModel();
+    await newSynchronizationDate.save();
+
     return { success: true, count: importedCount };
   } catch (error) {
-    console.error("Erreur lors de l'importation des données:", error);
+    console.error("Erreur lors de la synchronisation des données:", error);
     return { success: false, error: error.message };
   } finally {
     if (client) {

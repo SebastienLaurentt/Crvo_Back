@@ -126,7 +126,6 @@ const statusCategories = {
   "Stocké sur parc d'attente chiffrage attente retour devis": "Client",
   "Stocké sur parc d'attente chiffrage PR à commander": "Magasin",
   "Stocké sur parc d'attente chiffrage" : "Expertise",
-  "Stocké sur parc d'attente travaux" : "Production ou Magasin"
 };
 
 module.exports = { statusCategories };

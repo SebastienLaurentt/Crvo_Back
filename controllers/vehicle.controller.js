@@ -3,9 +3,10 @@ const UserModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { importVehicleData } = require("../services/vehicleImportServices");
+const { createSynchronizationDate } = require("./synchronization.controller");
 
 module.exports.addVehiclesBatch = async (req, res) => {
-  const vehicles = req.body; 
+  const vehicles = req.body;
 
   try {
     const results = [];
@@ -159,12 +160,21 @@ module.exports.initializeVehicleData = async () => {
   try {
     const result = await importVehicleData();
     if (result.success) {
-      console.log(`Données de véhicules initialisées avec succès. ${result.count} véhicules importés.`);
+      console.log(
+        `Données de véhicules initialisées avec succès. ${result.count} véhicules importés.`
+      );
+      await createSynchronizationDate();
     } else {
-      console.error("Erreur lors de l'initialisation des données de véhicules:", result.error);
+      console.error(
+        "Erreur lors de l'initialisation des données de véhicules:",
+        result.error
+      );
     }
   } catch (error) {
-    console.error("Erreur lors de l'initialisation des données de véhicules:", error);
-    throw error; // Propager l'erreur pour la gestion dans index.js
+    console.error(
+      "Erreur lors de l'initialisation des données de véhicules:",
+      error
+    );
+    throw error;
   }
 };
