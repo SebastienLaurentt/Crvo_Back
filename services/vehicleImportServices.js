@@ -3,7 +3,7 @@ const { Writable } = require('stream');
 const VehicleModel = require("../models/vehicle.model");
 const UserModel = require("../models/user.model");
 const { connectToFTP } = require("./ftpServices");
-const { statusCategories } = require('./statusCategories');
+const { statusCategories } = require('../data/statusCategories');
 const SynchronizationDateModel = require("../models/synchronizationDate.model");
 
 const excelDateToJSDate = (serial) => {
