@@ -13,18 +13,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors());
 
-// Routes
-app.use("/", require("./routes/completedVehicule.routes"));
+
 app.use("/", require("./routes/vehicle.routes"));
 app.use("/", require("./routes/user.routes"));
 app.use("/", require("./routes/cleanUpVehicle.routes"));
-app.use("/", require("./routes/cleanUpCompletedVehicle.routes"));
 app.use("/", require("./routes/synchronization.routes"));
 
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 
-  // Fonction pour exécuter l'importation des véhicules
   const runVehicleImport = () => {
     console.log("Exécution de l'importation des véhicules au démarrage");
     vehicleController
@@ -40,6 +37,5 @@ const server = app.listen(process.env.PORT, () => {
       );
   };
 
-  // Exécuter l'importation des véhicules immédiatement au démarrage
   runVehicleImport();
 });
