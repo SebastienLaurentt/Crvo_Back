@@ -91,15 +91,22 @@ const importVehicleData = async () => {
     const sheet = await readExcelFromFTP(client, "Etat-du-parc-Heure.csv");
     const vehiclesData = processFile(sheet);
 
-    await VehicleModel.deleteMany({});
+    let updatedCount = 0;
+    let addedCount = 0;
+    let deletedCount = 0;
 
-    let importedCount = 0;
+    const existingVehicles = await VehicleModel.find({});
+    const existingImmatriculationsMap = new Map(existingVehicles.map(v => [v.immatriculation, v]));
+
+    const newImmatriculations = new Set();
 
     for (const vehicle of vehiclesData) {
       if (!vehicle.dateCreation) {
         console.warn(`Date de création invalide pour le véhicule: ${vehicle.immatriculation}`);
-        continue; 
+        continue;
       }
+
+      newImmatriculations.add(vehicle.immatriculation);
 
       try {
         let user = await UserModel.findOne({ username: vehicle.client });
@@ -112,7 +119,7 @@ const importVehicleData = async () => {
           });
         }
 
-        const newVehicle = new VehicleModel({
+        const vehicleData = {
           immatriculation: vehicle.immatriculation,
           vin: vehicle.vin,
           modele: vehicle.modele,
@@ -124,20 +131,46 @@ const importVehicleData = async () => {
           dsp: vehicle.dsp,
           jantes: vehicle.jantes,
           statusCategory: vehicle.statusCategory,
-        });
+        };
 
-        await newVehicle.save();
-        importedCount++;
+        if (existingImmatriculationsMap.has(vehicle.immatriculation)) {
+          const existingVehicle = existingImmatriculationsMap.get(vehicle.immatriculation);
+          if (JSON.stringify(existingVehicle) !== JSON.stringify(vehicleData)) {
+            await VehicleModel.findOneAndUpdate(
+              { immatriculation: vehicle.immatriculation },
+              vehicleData,
+              { new: true }
+            );
+            updatedCount++;
+          }
+        } else {
+          await VehicleModel.create(vehicleData);
+          addedCount++;
+        }
       } catch (error) {
-        console.error(`Erreur lors de l'enregistrement du véhicule ${vehicle.immatriculation}:`, error);
+        console.error(`Erreur lors du traitement du véhicule ${vehicle.immatriculation}:`, error);
       }
     }
 
-    // Create a new synchronization date record
+    for (const [immatriculation, vehicle] of existingImmatriculationsMap) {
+      if (!newImmatriculations.has(immatriculation)) {
+        await VehicleModel.deleteOne({ _id: vehicle._id });
+        deletedCount++;
+      }
+    }
+
     const newSynchronizationDate = new SynchronizationDateModel();
     await newSynchronizationDate.save();
 
-    return { success: true, count: importedCount };
+    const finalVehicleCount = await VehicleModel.countDocuments();
+
+    return { 
+      success: true, 
+      updated: updatedCount, 
+      added: addedCount, 
+      deleted: deletedCount,
+      finalCount: finalVehicleCount
+    };
   } catch (error) {
     console.error("Erreur lors de la synchronisation des données:", error);
     return { success: false, error: error.message };

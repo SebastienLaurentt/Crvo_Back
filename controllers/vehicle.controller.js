@@ -161,18 +161,18 @@ module.exports.initializeVehicleData = async () => {
     const result = await importVehicleData();
     if (result.success) {
       console.log(
-        `Données de véhicules initialisées avec succès. ${result.count} véhicules importés.`
+        `Données de véhicules synchronisées avec succès. ${result.updated} véhicules mis à jour, ${result.added} ajoutés, ${result.deleted} supprimés.`
       );
       await createSynchronizationDate();
     } else {
       console.error(
-        "Erreur lors de l'initialisation des données de véhicules:",
+        "Erreur lors de la synchronisation des données de véhicules:",
         result.error
       );
     }
   } catch (error) {
     console.error(
-      "Erreur lors de l'initialisation des données de véhicules:",
+      "Erreur lors de la synchronisation des données de véhicules:",
       error
     );
     throw error;

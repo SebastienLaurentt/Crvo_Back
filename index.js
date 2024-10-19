@@ -16,7 +16,6 @@ app.use(cors());
 
 app.use("/", require("./routes/vehicle.routes"));
 app.use("/", require("./routes/user.routes"));
-app.use("/", require("./routes/cleanUpVehicle.routes"));
 app.use("/", require("./routes/synchronization.routes"));
 
 const server = app.listen(process.env.PORT, () => {
