@@ -1,9 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const vehicleController = require("./controllers/vehicle.controller");
 const bodyParser = require("body-parser");
 const cron = require("node-cron");
+const {
+  syncRegularFiles,
+  syncNightlyFiles,
+  updateVehicleData,
+} = require("./services/syncService");
 
 require("dotenv").config({ path: "./.env" });
 require("./config/db");
@@ -19,17 +23,10 @@ app.use("/", require("./routes/synchronization.routes"));
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 
-  const updateVehicleData = async () => {
-    console.log("Lancement de la synchronisation des véhicules");
-    try {
-      await vehicleController.runVehicleSynchronization();
-      console.log("Synchronisation des véhicules terminée");
-    } catch (err) {
-      console.error("Erreur lors de la synchronisation des véhicules:", err);
-    }
-  };
-
-  cron.schedule("12 * * * *", () => {
-    updateVehicleData();
-  });
+  // cron.schedule("12 * * * *", updateVehicleData);
+  // cron.schedule("13 * * * *", syncRegularFiles);
+  // cron.schedule("1 18 * * *", syncNightlyFiles);
+  updateVehicleData()
+  syncRegularFiles()
+  syncNightlyFiles()
 });
