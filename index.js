@@ -7,7 +7,7 @@ const {
   syncRegularFiles,
   syncNightlyFiles,
   updateVehicleData,
-} = require("./services/syncService");
+} = require("./services/syncInit");
 
 require("dotenv").config({ path: "./.env" });
 require("./config/db");

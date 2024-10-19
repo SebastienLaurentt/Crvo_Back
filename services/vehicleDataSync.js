@@ -1,11 +1,13 @@
-const xlsx = require('xlsx');
-const { Writable } = require('stream');
+const xlsx = require("xlsx");
+const { Writable } = require("stream");
 const VehicleModel = require("../models/vehicle.model");
 const UserModel = require("../models/user.model");
-const { connectToFTP } = require("./ftpServices");
-const { statusCategories } = require('../data/statusCategories');
+const { connectToFTP } = require("./ftpClient");
+const { statusCategories } = require("../data/statusCategories");
 const SynchronizationDateModel = require("../models/synchronizationDate.model");
-const { createSynchronizationDate } = require('../controllers/synchronization.controller');
+const {
+  createSynchronizationDate,
+} = require("../controllers/synchronization.controller");
 
 const excelDateToJSDate = (serial) => {
   if (!serial || isNaN(serial)) {
@@ -45,18 +47,18 @@ const downloadExcelFromFTP = async (client, filename) => {
     write(chunk, encoding, callback) {
       chunks.push(chunk);
       callback();
-    }
+    },
   });
 
   await client.downloadTo(memoryStream, filename);
   const buffer = Buffer.concat(chunks);
-  const workbook = xlsx.read(buffer, { type: 'buffer' });
+  const workbook = xlsx.read(buffer, { type: "buffer" });
   return workbook.Sheets[workbook.SheetNames[0]];
 };
 
 const parseExcelData = (sheet) => {
   const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
-  return data.slice(1).map(row => ({
+  return data.slice(1).map((row) => ({
     client: row[1] ? String(row[1]).trim() : null,
     immatriculation: row[2] ? String(row[2]).trim() : null,
     modele: row[3] ? String(row[3]).trim() : null,
@@ -80,7 +82,7 @@ const categorizeStatus = (status, pieceDisponible) => {
   if (status === "Stocké sur parc d'attente travaux") {
     return pieceDisponible === "PIECE DISPONIBLE" ? "Production" : "Magasin";
   }
-  return statusCategories[status] || 'Inconnu';
+  return statusCategories[status] || "Inconnu";
 };
 
 const updateVehiclesInDatabase = async (vehiclesData) => {
@@ -91,7 +93,9 @@ const updateVehiclesInDatabase = async (vehiclesData) => {
     // Créer les nouveaux véhicules
     for (const vehicle of vehiclesData) {
       if (!vehicle.dateCreation) {
-        console.warn(`Date de création invalide pour le véhicule: ${vehicle.immatriculation}`);
+        console.warn(
+          `Date de création invalide pour le véhicule: ${vehicle.immatriculation}`
+        );
         continue;
       }
 
@@ -101,7 +105,7 @@ const updateVehiclesInDatabase = async (vehiclesData) => {
         user = await UserModel.create({
           username: vehicle.client,
           password: Math.random().toString(36).slice(-8),
-          role: 'member',
+          role: "member",
         });
       }
 
@@ -122,9 +126,9 @@ const updateVehiclesInDatabase = async (vehiclesData) => {
 
     const finalVehicleCount = await VehicleModel.countDocuments();
 
-    return { 
+    return {
       success: true,
-      count: finalVehicleCount
+      count: finalVehicleCount,
     };
   } catch (error) {
     console.error("Erreur lors de la mise à jour des véhicules:", error);
@@ -138,7 +142,10 @@ const synchronizeVehiclesFromFTP = async () => {
   try {
     ftpClient = await connectToFTP();
 
-    const sheet = await downloadExcelFromFTP(ftpClient, "Etat-du-parc-Heure.csv");
+    const sheet = await downloadExcelFromFTP(
+      ftpClient,
+      "Etat-du-parc-Heure.csv"
+    );
     const vehiclesData = parseExcelData(sheet);
 
     const syncResult = await updateVehiclesInDatabase(vehiclesData);
