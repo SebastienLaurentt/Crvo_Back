@@ -9,7 +9,7 @@ module.exports.runVehicleSynchronization = async () => {
     const result = await synchronizeVehiclesFromFTP();
     if (result.success) {
       console.log(
-        `Synchronisation des véhicules réussie. ${result.updated} mis à jour, ${result.added} ajoutés, ${result.deleted} supprimés.`
+        `Synchronisation des véhicules réussie. Nombre total de véhicules : ${result.count}`
       );
     } else {
       console.error(
