@@ -29,7 +29,7 @@ const server = app.listen(process.env.PORT, () => {
     }
   };
 
-  cron.schedule("5 * * * *", () => {
+  cron.schedule("45 * * * *", () => {
     updateVehicleData();
   });
 });
