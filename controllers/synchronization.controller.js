@@ -1,16 +1,21 @@
-const SynchronizationDate = require('../models/synchronizationDate.model');
+const SynchronizationDate = require("../models/synchronizationDate.model");
 
-exports.createSynchronizationDate = async () => {
+module.exports.createSynchronizationDate = async () => {
   try {
     const newDate = new SynchronizationDate();
-    console.log('Nouvelle date de synchronisation créée:', newDate.date);
+    await newDate.save();
+    console.log("Nouvelle date de synchronisation créée:", newDate.date);
+    return newDate;
   } catch (error) {
-    console.error('Erreur lors de la création de la date de synchronisation:', error);
+    console.error(
+      "Erreur lors de la création de la date de synchronisation:",
+      error
+    );
     throw error;
   }
 };
 
-exports.getLatestSynchronizationDate = async (req, res) => {
+module.exports.getLatestSynchronizationDate = async (req, res) => {
   try {
     const latestDate = await SynchronizationDate.findOne().sort({ date: -1 });
     res.json(latestDate);

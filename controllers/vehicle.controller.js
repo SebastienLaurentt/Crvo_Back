@@ -1,26 +1,24 @@
 const VehicleModel = require("../models/vehicle.model");
-const { importVehicleData } = require("../services/vehicleImportServices");
 const { createSynchronizationDate } = require("./synchronization.controller");
+const {
+  synchronizeVehiclesFromFTP,
+} = require("../services/vehicleSyncService");
 
-module.exports.initializeVehicleData = async () => {
+module.exports.runVehicleSynchronization = async () => {
   try {
-    const result = await importVehicleData();
+    const result = await synchronizeVehiclesFromFTP();
     if (result.success) {
       console.log(
-        `Données de véhicules synchronisées avec succès. ${result.updated} véhicules mis à jour, ${result.added} ajoutés, ${result.deleted} supprimés.`
+        `Synchronisation des véhicules réussie. ${result.updated} mis à jour, ${result.added} ajoutés, ${result.deleted} supprimés.`
       );
-      await createSynchronizationDate();
     } else {
       console.error(
-        "Erreur lors de la synchronisation des données de véhicules:",
+        "Erreur lors de la synchronisation des véhicules:",
         result.error
       );
     }
   } catch (error) {
-    console.error(
-      "Erreur lors de la synchronisation des données de véhicules:",
-      error
-    );
+    console.error("Erreur lors de la synchronisation des véhicules:", error);
     throw error;
   }
 };
@@ -46,5 +44,3 @@ module.exports.getVehiclesByUser = async (req, res) => {
     return res.status(400).json({ message: err.message });
   }
 };
-
-
