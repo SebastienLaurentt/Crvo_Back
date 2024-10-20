@@ -4,17 +4,14 @@ require('dotenv').config({ path: './.env' });
 
 mongoose.set('strictQuery', true);
 
-mongoose.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('Connected to MongoDB');
-  createInitialUsers();
-})
-.catch(err => {
-  console.error('Could not connect to MongoDB', err);
-});
+mongoose.connect(process.env.MONGODB_URL)
+  .then(() => {
+    console.log('Connected to MongoDB');
+    createInitialUsers();
+  })
+  .catch(err => {
+    console.error('Could not connect to MongoDB', err);
+  });
 
 const createInitialUsers = async () => {
   try {
