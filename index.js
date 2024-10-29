@@ -23,9 +23,9 @@ app.use("/", require("./routes/synchronization.routes"));
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 
-  // cron.schedule("12 * * * *", updateVehicleData);
-  // cron.schedule("13 * * * *", syncRegularFiles);
-  // cron.schedule("1 18 * * *", syncNightlyFiles);
+  cron.schedule("5 6-22 * * *", updateVehicleData);
+  cron.schedule("5 6-22 * * *", syncRegularFiles);
+  cron.schedule("1 18 * * *", syncNightlyFiles);
   updateVehicleData()
   syncRegularFiles()
   syncNightlyFiles()
