@@ -8,6 +8,7 @@ const SynchronizationDateModel = require("../models/synchronizationDate.model");
 const {
   createSynchronizationDate,
 } = require("../controllers/synchronization.controller");
+const mongoose = require("mongoose");
 
 const excelDateToJSDate = (serial) => {
   if (!serial || isNaN(serial)) {
@@ -86,43 +87,56 @@ const categorizeStatus = (status, pieceDisponible) => {
 };
 
 const updateVehiclesInDatabase = async (vehiclesData) => {
+  const session = await mongoose.startSession();
+  
   try {
-    // Supprimer tous les véhicules existants
-    await VehicleModel.deleteMany({});
+    await session.withTransaction(async () => {
 
-    // Créer les nouveaux véhicules
-    for (const vehicle of vehiclesData) {
-      if (!vehicle.dateCreation) {
-        console.warn(
-          `Date de création invalide pour le véhicule: ${vehicle.immatriculation}`
-        );
-        continue;
-      }
+      await VehicleModel.deleteMany({}, { session });
 
-      let user = await UserModel.findOne({ username: vehicle.client });
+      const operations = [];
+      const userCache = new Map();
 
-      if (!user) {
-        user = await UserModel.create({
-          username: vehicle.client,
-          password: Math.random().toString(36).slice(-8),
-          role: "member",
+      for (const vehicle of vehiclesData) {
+        if (!vehicle.dateCreation) {
+          console.warn(
+            `Date de création invalide pour le véhicule: ${vehicle.immatriculation}`
+          );
+          continue;
+        }
+
+        let user = userCache.get(vehicle.client);
+        
+        if (!user) {
+          user = await UserModel.findOne({ username: vehicle.client }).session(session);
+          if (!user) {
+            user = await UserModel.create([{
+              username: vehicle.client,
+              password: Math.random().toString(36).slice(-8),
+              role: "member",
+            }], { session });
+            user = user[0];
+          }
+          userCache.set(vehicle.client, user);
+        }
+
+        operations.push({
+          immatriculation: vehicle.immatriculation,
+          vin: vehicle.vin,
+          modele: vehicle.modele,
+          dateCreation: vehicle.dateCreation,
+          user: user._id,
+          mecanique: vehicle.mecanique,
+          carrosserie: vehicle.carrosserie,
+          ct: vehicle.ct,
+          dsp: vehicle.dsp,
+          jantes: vehicle.jantes,
+          statusCategory: vehicle.statusCategory,
         });
       }
 
-      await VehicleModel.create({
-        immatriculation: vehicle.immatriculation,
-        vin: vehicle.vin,
-        modele: vehicle.modele,
-        dateCreation: vehicle.dateCreation,
-        user: user._id,
-        mecanique: vehicle.mecanique,
-        carrosserie: vehicle.carrosserie,
-        ct: vehicle.ct,
-        dsp: vehicle.dsp,
-        jantes: vehicle.jantes,
-        statusCategory: vehicle.statusCategory,
-      });
-    }
+      await VehicleModel.insertMany(operations, { session });
+    });
 
     const finalVehicleCount = await VehicleModel.countDocuments();
 
@@ -133,6 +147,8 @@ const updateVehiclesInDatabase = async (vehiclesData) => {
   } catch (error) {
     console.error("Erreur lors de la mise à jour des véhicules:", error);
     return { success: false, error: error.message };
+  } finally {
+    await session.endSession();
   }
 };
 

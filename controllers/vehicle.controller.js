@@ -1,8 +1,6 @@
 const VehicleModel = require("../models/vehicle.model");
 const { createSynchronizationDate } = require("./synchronization.controller");
-const {
-  synchronizeVehiclesFromFTP,
-} = require("../services/vehicleDataSync");
+const { synchronizeVehiclesFromFTP } = require("../services/vehicleDataSync");
 
 module.exports.runVehicleSynchronization = async () => {
   try {
