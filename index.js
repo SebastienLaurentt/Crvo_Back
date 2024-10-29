@@ -26,7 +26,4 @@ const server = app.listen(process.env.PORT, () => {
   cron.schedule("5 6-22 * * *", updateVehicleData);
   cron.schedule("5 6-22 * * *", syncRegularFiles);
   cron.schedule("1 18 * * *", syncNightlyFiles);
-  updateVehicleData()
-  syncRegularFiles()
-  syncNightlyFiles()
 });
