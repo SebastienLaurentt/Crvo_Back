@@ -71,7 +71,7 @@ const parseExcelData = (sheet) => {
       row[10] ? String(row[10]).trim() : null,
       row[22] ? String(row[22]).trim() : null
     ),
-    daySinceStatut: row[12] ? Number(row[12]) : 0,
+    daySinceStatut: row[12] ? parseFloat(row[12]) : 0,
     mecanique: String(row[16]).trim().toLowerCase() === "oui",
     carrosserie: String(row[17]).trim().toLowerCase() === "oui",
     ct: String(row[18]).trim().toLowerCase() === "oui",
