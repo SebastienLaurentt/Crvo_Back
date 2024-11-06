@@ -125,6 +125,7 @@ const statusCategories = {
   "Transport retour effectué": "Transport retour",
   "Stocké sur parc d'attente chiffrage attente retour devis": "Client",
   "Stocké sur parc d'attente chiffrage PR à commander": "Magasin",
+  "Sous-traitance carrosserie en cours": "Production",
   "Stocké sur parc d'attente chiffrage" : "Expertise",
 };
 
