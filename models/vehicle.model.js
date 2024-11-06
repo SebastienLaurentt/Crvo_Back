@@ -51,6 +51,10 @@ const VehicleSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  daySinceStatut: {
+    type: Number,
+    required: true,
+  },
 }, {
   timestamps: true,
 });
