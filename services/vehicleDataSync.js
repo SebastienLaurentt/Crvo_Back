@@ -59,25 +59,34 @@ const downloadExcelFromFTP = async (client, filename) => {
 
 const parseExcelData = (sheet) => {
   const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
-  return data.slice(1).map((row) => ({
-    client: row[1] ? String(row[1]).trim() : null,
-    immatriculation: row[2] ? String(row[2]).trim() : null,
-    modele: row[3] ? String(row[3]).trim() : null,
-    vin: row[5] ? String(row[5]).trim() : null,
-    dateCreation: row[8] ? convertToDate(row[8]) : null,
-    status: row[10] ? String(row[10]).trim() : null,
-    pieceDisponible: row[22] ? String(row[22]).trim() : null,
-    statusCategory: categorizeStatus(
-      row[10] ? String(row[10]).trim() : null,
-      row[22] ? String(row[22]).trim() : null
-    ),
-    daySinceStatut: row[12] ? parseFloat(row[12]) : 0,
-    mecanique: String(row[16]).trim().toLowerCase() === "oui",
-    carrosserie: String(row[17]).trim().toLowerCase() === "oui",
-    ct: String(row[18]).trim().toLowerCase() === "oui",
-    dsp: String(row[19]).trim().toLowerCase() === "oui",
-    jantes: String(row[20]).trim().toLowerCase() === "oui",
-  }));
+  return data.slice(1).map((row) => {
+    const rawValue = row[12];
+    console.log('Valeur brute colonne 13:', rawValue);
+    console.log('Type de la valeur:', typeof rawValue);
+    
+    // Si c'est un nombre décimal, on le garde tel quel
+    const daySinceStatut = typeof rawValue === 'number' ? rawValue : 0;
+    
+    return {
+      client: row[1] ? String(row[1]).trim() : null,
+      immatriculation: row[2] ? String(row[2]).trim() : null,
+      modele: row[3] ? String(row[3]).trim() : null,
+      vin: row[5] ? String(row[5]).trim() : null,
+      dateCreation: row[8] ? convertToDate(row[8]) : null,
+      status: row[10] ? String(row[10]).trim() : null,
+      pieceDisponible: row[22] ? String(row[22]).trim() : null,
+      statusCategory: categorizeStatus(
+        row[10] ? String(row[10]).trim() : null,
+        row[22] ? String(row[22]).trim() : null
+      ),
+      daySinceStatut: daySinceStatut,
+      mecanique: String(row[16]).trim().toLowerCase() === "oui",
+      carrosserie: String(row[17]).trim().toLowerCase() === "oui",
+      ct: String(row[18]).trim().toLowerCase() === "oui",
+      dsp: String(row[19]).trim().toLowerCase() === "oui",
+      jantes: String(row[20]).trim().toLowerCase() === "oui",
+    };
+  });
 };
 
 const categorizeStatus = (status, pieceDisponible) => {
