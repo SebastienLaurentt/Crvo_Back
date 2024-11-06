@@ -53,19 +53,31 @@ const downloadExcelFromFTP = async (client, filename) => {
 
   await client.downloadTo(memoryStream, filename);
   const buffer = Buffer.concat(chunks);
-  const workbook = xlsx.read(buffer, { type: "buffer" });
+  const workbook = xlsx.read(buffer, { 
+    type: "buffer",
+    raw: true,
+    cellDates: true,
+    cellNF: false,
+    cellText: false
+  });
   return workbook.Sheets[workbook.SheetNames[0]];
 };
 
 const parseExcelData = (sheet) => {
-  const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+  const data = xlsx.utils.sheet_to_json(sheet, { 
+    header: 1,
+    raw: true,
+    defval: null
+  });
+  
   return data.slice(1).map((row) => {
     const rawValue = row[12];
-    console.log('Valeur brute colonne 13:', rawValue);
-    console.log('Type de la valeur:', typeof rawValue);
-    
-    // Si c'est un nombre décimal, on le garde tel quel
-    const daySinceStatut = typeof rawValue === 'number' ? rawValue : 0;
+    // Conversion de la chaîne en nombre en gérant le séparateur décimal
+    let daySinceStatut = 0;
+    if (rawValue) {
+      const strValue = String(rawValue).replace(',', '.');
+      daySinceStatut = parseFloat(strValue);
+    }
     
     return {
       client: row[1] ? String(row[1]).trim() : null,
@@ -79,7 +91,7 @@ const parseExcelData = (sheet) => {
         row[10] ? String(row[10]).trim() : null,
         row[22] ? String(row[22]).trim() : null
       ),
-      daySinceStatut: daySinceStatut,
+      daySinceStatut: isNaN(daySinceStatut) ? 0 : daySinceStatut,
       mecanique: String(row[16]).trim().toLowerCase() === "oui",
       carrosserie: String(row[17]).trim().toLowerCase() === "oui",
       ct: String(row[18]).trim().toLowerCase() === "oui",
