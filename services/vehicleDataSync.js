@@ -97,6 +97,7 @@ const parseExcelData = (sheet) => {
       ct: String(row[18]).trim().toLowerCase() === "oui",
       dsp: String(row[19]).trim().toLowerCase() === "oui",
       jantes: String(row[20]).trim().toLowerCase() === "oui",
+      partBrise: String(row[21]).trim().toLowerCase() === "oui",
     };
   });
 };
@@ -153,6 +154,7 @@ const updateVehiclesInDatabase = async (vehiclesData) => {
           ct: vehicle.ct,
           dsp: vehicle.dsp,
           jantes: vehicle.jantes,
+          partBrise: vehicle.partBrise,
           statusCategory: vehicle.statusCategory,
           daySinceStatut: vehicle.daySinceStatut,
         });
