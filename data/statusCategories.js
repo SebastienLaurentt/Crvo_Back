@@ -108,7 +108,7 @@ const statusCategories = {
   "En attente de photo": "Production",
   "Photo en cours": "Production",
   "Demande de convoyage vers Sortie Usine": "Production",
-  "Sortie Usine": "Production",
+  "Sortie Usine": "Stockage",
   "Demande de convoyage vers parc d'attente (CT)": "Production",
   "Demande de convoyage vers CT en cours": "Production",
   "Convoyage vers CT en cours": "Production",
