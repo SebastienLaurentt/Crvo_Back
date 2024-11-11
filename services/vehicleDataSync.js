@@ -93,11 +93,10 @@ const parseExcelData = (sheet) => {
       ),
       daySinceStatut: isNaN(daySinceStatut) ? 0 : daySinceStatut,
       mecanique: String(row[16]).trim().toLowerCase() === "oui",
-      carrosserie: String(row[17]).trim().toLowerCase() === "oui",
+      carrosserie: String(row[17]).trim().toLowerCase() === "oui" || String(row[21]).trim().toLowerCase() === "oui",
       ct: String(row[18]).trim().toLowerCase() === "oui",
       dsp: String(row[19]).trim().toLowerCase() === "oui",
       jantes: String(row[20]).trim().toLowerCase() === "oui",
-      partBrise: String(row[21]).trim().toLowerCase() === "oui",
     };
   });
 };
@@ -154,7 +153,6 @@ const updateVehiclesInDatabase = async (vehiclesData) => {
           ct: vehicle.ct,
           dsp: vehicle.dsp,
           jantes: vehicle.jantes,
-          partBrise: vehicle.partBrise,
           statusCategory: vehicle.statusCategory,
           daySinceStatut: vehicle.daySinceStatut,
         });

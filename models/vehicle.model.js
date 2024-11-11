@@ -47,10 +47,6 @@ const VehicleSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  partBrise: {
-    type: Boolean,
-    default: false,
-  },
   esthetique: {
     type: Boolean,
     default: true,
