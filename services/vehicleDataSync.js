@@ -72,13 +72,18 @@ const parseExcelData = (sheet) => {
   
   return data.slice(1).map((row) => {
     const rawValue = row[12];
-    // Conversion de la chaîne en nombre en gérant le séparateur décimal
     let daySinceStatut = 0;
     if (rawValue) {
       const strValue = String(rawValue).replace(',', '.');
       daySinceStatut = parseFloat(strValue);
     }
     
+    const mecanique = String(row[16]).trim().toLowerCase() === "oui";
+    const carrosserie = String(row[17]).trim().toLowerCase() === "oui" || String(row[21]).trim().toLowerCase() === "oui";
+    const ct = String(row[18]).trim().toLowerCase() === "oui";
+    const dsp = String(row[19]).trim().toLowerCase() === "oui";
+    const jantes = String(row[20]).trim().toLowerCase() === "oui";
+
     return {
       client: row[1] ? String(row[1]).trim() : null,
       immatriculation: row[2] ? String(row[2]).trim() : null,
@@ -86,17 +91,19 @@ const parseExcelData = (sheet) => {
       vin: row[5] ? String(row[5]).trim() : null,
       dateCreation: row[8] ? convertToDate(row[8]) : null,
       status: row[10] ? String(row[10]).trim() : null,
-      pieceDisponible: row[22] ? String(row[22]).trim() : null,
+
       statusCategory: categorizeStatus(
         row[10] ? String(row[10]).trim() : null,
         row[22] ? String(row[22]).trim() : null
       ),
       daySinceStatut: isNaN(daySinceStatut) ? 0 : daySinceStatut,
-      mecanique: String(row[16]).trim().toLowerCase() === "oui",
-      carrosserie: String(row[17]).trim().toLowerCase() === "oui" || String(row[21]).trim().toLowerCase() === "oui",
-      ct: String(row[18]).trim().toLowerCase() === "oui",
-      dsp: String(row[19]).trim().toLowerCase() === "oui",
-      jantes: String(row[20]).trim().toLowerCase() === "oui",
+      mecanique,
+      carrosserie,
+      ct,
+      dsp,
+      jantes,
+      esthetique: !mecanique && !carrosserie && !ct && !dsp && !jantes,
+      pieceDisponible: row[22] ? String(row[22]).trim() : null,
     };
   });
 };
