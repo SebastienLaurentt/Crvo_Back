@@ -49,7 +49,7 @@ const VehicleSchema = new mongoose.Schema({
   },
   esthetique: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   daySinceStatut: {
     type: Number,
