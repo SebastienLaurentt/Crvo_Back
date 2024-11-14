@@ -160,6 +160,7 @@ const updateVehiclesInDatabase = async (vehiclesData) => {
           ct: vehicle.ct,
           dsp: vehicle.dsp,
           jantes: vehicle.jantes,
+          esthetique: vehicle.esthetique,
           statusCategory: vehicle.statusCategory,
           daySinceStatut: vehicle.daySinceStatut,
         });
