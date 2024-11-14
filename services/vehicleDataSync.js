@@ -78,12 +78,6 @@ const parseExcelData = (sheet) => {
       daySinceStatut = parseFloat(strValue);
     }
     
-    const mecanique = String(row[16]).trim().toLowerCase() === "oui";
-    const carrosserie = String(row[17]).trim().toLowerCase() === "oui" || String(row[21]).trim().toLowerCase() === "oui";
-    const ct = String(row[18]).trim().toLowerCase() === "oui";
-    const dsp = String(row[19]).trim().toLowerCase() === "oui";
-    const jantes = String(row[20]).trim().toLowerCase() === "oui";
-
     return {
       client: row[1] ? String(row[1]).trim() : null,
       immatriculation: row[2] ? String(row[2]).trim() : null,
@@ -97,12 +91,11 @@ const parseExcelData = (sheet) => {
         row[22] ? String(row[22]).trim() : null
       ),
       daySinceStatut: isNaN(daySinceStatut) ? 0 : daySinceStatut,
-      mecanique,
-      carrosserie,
-      ct,
-      dsp,
-      jantes,
-      esthetique: !mecanique && !carrosserie && !ct && !dsp && !jantes,
+      mecanique: String(row[16]).trim().toLowerCase() === "oui",
+      carrosserie: String(row[17]).trim().toLowerCase() === "oui" || String(row[21]).trim().toLowerCase() === "oui",
+      ct: String(row[18]).trim().toLowerCase() === "oui",
+      dsp: String(row[19]).trim().toLowerCase() === "oui",
+      jantes: String(row[20]).trim().toLowerCase() === "oui",
       pieceDisponible: row[22] ? String(row[22]).trim() : null,
     };
   });
